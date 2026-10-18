@@ -1,0 +1,2 @@
+# Vagrant per-machine state (includes private SSH keys)
+.vagrant/
