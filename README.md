@@ -1,4 +1,4 @@
-# Linux Shell Scripting — Jason Cannon (Project-Based)
+# LSS_JC < Linux Shell Scripting (Project-Based) >
 
 My practice repo for the Udemy course
 [**Linux Shell Scripting: A Project-Based Approach to Learning**](https://www.udemy.com/course/linux-shell-scripting-projects/).
