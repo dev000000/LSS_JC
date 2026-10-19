@@ -1,539 +1,100 @@
 # Linux Shell Scripting — Jason Cannon (Project-Based)
 
-Hands-on Bash scripting practice for the Udemy course
-[**Linux Shell Scripting: A Project-Based Approach to Learning**](https://www.udemy.com/course/linux-shell-scripting-projects/)
-by Jason Cannon.
+My practice repo for the Udemy course
+[**Linux Shell Scripting: A Project-Based Approach to Learning**](https://www.udemy.com/course/linux-shell-scripting-projects/).
+In the course you learn Bash by building six sysadmin tools on CentOS 7 VMs managed with Vagrant + VirtualBox.
+Each lesson is logged as a [GitHub issue](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues).
 
-The course teaches Bash by having you build six real sysadmin tools on CentOS 7
-virtual machines run by Vagrant and VirtualBox. This repository holds:
+## Projects
 
-- every script I wrote while following the course,
-- my solutions to the seven course exercises,
-- the Vagrant projects for the lab VMs,
-- study notes written as annotated shell scripts.
-
-Each lesson is tracked as a [GitHub issue](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues),
-and every commit links back to its lesson issue (see [Learning-log workflow](#learning-log-workflow)).
-
-> **Status:** all six course projects (Sections 3–8, issues #1–#22) are complete.
-
----
-
-## Contents
-
-- [What gets built](#what-gets-built)
-- [Skills covered](#skills-covered)
-- [Prepare the environment](#prepare-the-environment)
-- [Initial setup](#initial-setup)
-- [Project structure](#project-structure)
-- [File reference](#file-reference)
-- [Course map: lesson → issue → files](#course-map-lesson--issue--files)
-- [Running the scripts](#running-the-scripts)
-- [Learning-log workflow](#learning-log-workflow)
-- [Troubleshooting](#troubleshooting)
-- [Credits](#credits)
-
----
-
-## What gets built
-
-Each course project is a script written for a help desk or sysadmin scenario:
-
-| Project | Course section | Script | What it does |
-|---|---|---|---|
-| 1 | S3 · User and Account Creation | [`add-local-user.sh`](localusers/exercises/add-local-user.sh) | Prompts for a username, real name and password, then creates the local account and forces a password change at first login |
-| 2 | S4 · Password Generation and Script Arguments | [`add-new-local-user.sh`](localusers/exercises/add-new-local-user.sh) | Same task, but the username and comment come from arguments and the password is generated automatically |
-| 3 | S5 · Linux Programming Conventions | [`add-newer-local-user.sh`](localusers/exercises/add-newer-local-user.sh) | Follows Unix conventions: errors go to STDERR, command noise goes to `/dev/null`, and only the account details are printed |
-| 4 | S6 · Parsing Command Line Options | [`disable-local-user.sh`](localusers/exercises/disable-local-user.sh) | Disables (`chage -E 0`), deletes (`-d`) and archives (`-a`) accounts, and can remove home directories (`-r`). It refuses to touch system accounts (UID < 1000) |
-| 5 | S7 · Transforming and Reporting on Data | [`show-attackers.sh`](localusers/exercises/show-attackers.sh) | Reads an sshd log and prints a CSV of IPs with more than 10 failed logins, plus each IP's country (`geoiplookup`) |
-| 6 | S8 · Network Scripting and Automating Distributed Systems | [`run-everywhere.sh`](multinet/exercises/run-everywhere.sh) | Runs a command on every server in a list over SSH. Options: dry run (`-n`), sudo (`-s`), verbose (`-v`), custom server list (`-f FILE`) |
-
-## Skills covered
-
-| Area | Topics |
-|---|---|
-| Bash fundamentals | shebang, permissions, variables, `${var}` expansion, quoting, command substitution, builtins vs external commands (`type`, `help`, `man`) |
-| Control flow | `if` / `test` / `[[ ]]`, exit statuses and `$?`, `case`, `for`, `while`, `shift`, functions, `local`, `readonly`, `return` vs `exit` |
-| Script interface | positional and special parameters (`$0 $# $@ $*`), `getopts`, `OPTARG`/`OPTIND`, `usage()` messages, arithmetic `$(( ))` |
-| I/O | STDIN/STDOUT/STDERR, file descriptors, `>` `>>` `2>` `&>` `2>&1` `\|&`, `/dev/null`, `read`, `tee` |
-| User administration | `useradd`, `passwd --stdin` / `-e`, `userdel -r`, `chage -E`, `usermod -s`, UID ranges in `/etc/login.defs` |
-| Files & archives | `locate`, `find`, the filesystem layout (FHS), `tar -czf/-tzf/-xzf`, `gzip` |
-| Text processing | `cut`, `awk` (`-F`, `$NF`, `OFS`), `grep`, `sort`, `uniq -c`, `wc`, `sed` (substitute, delete, `-i.bak`, addresses) |
-| Data & security | `$RANDOM`, `date +%s%N`, `sha256sum`, `shuf`, `fold`, `logger` / syslog, `netstat`, `geoiplookup` |
-| Remote automation | Vagrant multi-machine labs, `/etc/hosts`, `ssh-keygen` + `ssh-copy-id`, remote commands over SSH, ssh exit code 255, `set -o pipefail` |
-
----
-
-## Prepare the environment
-
-All scripts run **inside CentOS 7 VMs**, not on your own machine. Your host only needs the tools that create and connect to those VMs.
-
-### Host requirements
-
-- A 64-bit Windows, macOS or Linux computer.
-- **VT-x (Intel) or AMD-V (AMD) virtualization enabled in the BIOS/UEFI.**
-- About 500 MB free for the Vagrant box, plus about 1 GB of RAM per running VM.
-- Basic command-line skills.
-
-### Software to install
-
-| Tool | Why | Download |
+| # | Script | What it does |
 |---|---|---|
-| **VirtualBox** | Hypervisor that runs the VMs | https://www.virtualbox.org/wiki/Downloads |
-| **Vagrant** | Creates and manages VMs from a `Vagrantfile` | https://developer.hashicorp.com/vagrant/downloads |
-| **Git** | Clone this repo. On Windows, Git for Windows also provides the `ssh` client | https://git-scm.com/downloads |
-| Microsoft Visual C++ Redistributable (x64) | Windows only; Vagrant needs it | https://learn.microsoft.com/cpp/windows/latest-supported-vc-redist |
+| 1 | [`add-local-user.sh`](localusers/exercises/add-local-user.sh) | Prompts for a username, name and password, then creates the account and forces a password change at first login |
+| 2 | [`add-new-local-user.sh`](localusers/exercises/add-new-local-user.sh) | Takes the username and comment as arguments and generates a random password |
+| 3 | [`add-newer-local-user.sh`](localusers/exercises/add-newer-local-user.sh) | Same as #2, but follows Unix conventions: errors go to STDERR, command noise goes to `/dev/null` |
+| 4 | [`disable-local-user.sh`](localusers/exercises/disable-local-user.sh) | Disables, deletes (`-d`) or archives (`-a`) accounts, optionally removing home directories (`-r`). Skips system accounts |
+| 5 | [`show-attackers.sh`](localusers/exercises/show-attackers.sh) | Prints a CSV of IPs with more than 10 failed SSH logins, with each IP's country |
+| 6 | [`run-everywhere.sh`](multinet/exercises/run-everywhere.sh) | Runs one command on many servers over SSH. Options: dry run `-n`, sudo `-s`, verbose `-v`, server list `-f` |
 
-**Windows notes** (from the course handout, Exercise 1):
+## Requirements
 
-- Disable **Hyper-V** and **Virtual Machine Platform**. They conflict with VirtualBox.
-- Some antivirus software (for example Avira) breaks VirtualBox. Errors such as `VERR_OPEN_FAILED` or `E_FAIL (0x80004005)` usually mean that.
-- When installing Git, choose *"Use Git and optional Unix tools from the Command Prompt"*.
-- Before cloning, run `git config --global core.autocrlf input` so the scripts keep LF line endings (see [Troubleshooting](#troubleshooting)).
+- [VirtualBox](https://www.virtualbox.org/wiki/Downloads), [Vagrant](https://developer.hashicorp.com/vagrant/downloads) and [Git](https://git-scm.com/downloads)
+- VT-x/AMD-V enabled in BIOS
+- Windows only: disable Hyper-V, and run `git config --global core.autocrlf input` before cloning so scripts keep LF line endings
 
-**Apple Silicon Macs:** the `jasonc/centos7` box targets x86-64 VirtualBox. Follow the course's separate *Apple Silicon* walkthrough in Section 2.
-
-### Check the install
-
-```bash
-vagrant --version
-VBoxManage --version
-git --version
-ssh -V
-```
-
----
-
-## Initial setup
-
-### 1. Clone the repository
-
-This repo takes the place of the `shellclass/` working folder used in the course. Each top-level folder is one Vagrant project.
+## Setup
 
 ```bash
 git clone https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon.git
 cd Linux-Shell-Scripting-Jason_Cannon
-```
-
-### 2. Download the course box (once)
-
-```bash
 vagrant box add jasonc/centos7
 ```
 
-### 3. (Optional) Test the lab — Exercise 1
+**Projects 1–5** run on a single VM:
 
 ```bash
-cd testbox01
-vagrant up            # first run clones the box into VirtualBox
-vagrant status        # should report "running"
-vagrant ssh           # log in as user "vagrant" (password: vagrant, root password: vagrant)
-exit
-vagrant halt          # stop the VM (keeps its state)
-# vagrant destroy     # delete the VM completely
-cd ..
+cd localusers && vagrant up && vagrant ssh
+cd /vagrant            # the host's localusers/ folder, shared into the VM
 ```
 
-`multitest/` is the two-VM version (`test1` 10.9.8.5, `test2` 10.9.8.6). It shows how one `Vagrantfile` can define several machines.
-
-> If `vagrant up` rejects the `10.9.8.x` addresses, see [Host-only IP range](#host-only-ip-range-1098x-rejected).
-
-### 4. Projects 1–5: the `localusers` VM
+**Project 6** runs on three VMs: `admin01` (192.168.56.10), `server01` (.11) and `server02` (.12):
 
 ```bash
-cd localusers
-vagrant up
-vagrant ssh
-cd /vagrant           # inside the VM, /vagrant is the host's localusers/ folder
-ls                    # demos/  exercises/  lessons/  Vagrantfile
-```
-
-Edit files on the host with any editor and run them in the VM. The `/vagrant` shared folder keeps both sides in sync.
-
-### 5. Project 6: the `multinet` 3-VM network
-
-```bash
-cd multinet
-vagrant up                    # starts admin01, server01, server02
-vagrant ssh admin01
-```
-
-| VM | Hostname | IP | Role |
-|---|---|---|---|
-| `admin01` | admin01 | 192.168.56.10 | Admin host; run the scripts from here |
-| `server01` | server01 | 192.168.56.11 | Target server |
-| `server02` | server02 | 192.168.56.12 | Target server |
-
-Then, **on admin01**, do this one-time setup:
-
-```bash
-# Name resolution (tee is needed because sudo doesn't apply to the >> redirect)
+cd multinet && vagrant up && vagrant ssh admin01
+# on admin01, one-time setup:
 echo "192.168.56.11 server01" | sudo tee -a /etc/hosts
 echo "192.168.56.12 server02" | sudo tee -a /etc/hosts
-ping -c 3 server01
-
-# Passwordless SSH from admin01 → servers (press Enter for every prompt; password is "vagrant")
-ssh-keygen
-ssh-copy-id server01
-ssh-copy-id server02
-ssh server01 hostname         # → server01, no password asked
-
-cd /vagrant                   # = host's multinet/ folder
-cat demos/servers             # default server list: server01, server02
+ssh-keygen                                   # press Enter at every prompt
+ssh-copy-id server01 && ssh-copy-id server02 # password: vagrant
+cd /vagrant
 ```
-
-> The course handout uses `10.9.8.10–12` for this network. This repo uses `192.168.56.10–12`, the range current VirtualBox versions accept for host-only networks without extra configuration.
-> The handout also uses `/vagrant/servers`, but the scripts here read **`/vagrant/demos/servers`**.
-
----
 
 ## Project structure
 
 ```
-Linux-Shell-Scripting-Jason_Cannon/
-├── README.md
-├── .gitignore                    # ignores .vagrant/ (VM state + private SSH keys)
-├── .claude/
-│   └── skills/study-log/SKILL.md # Claude Code skill: one issue + one commit per lesson
-├── documents/                    # Course exercise handouts (PDF), Exercise 1–7
-├── testbox01/                    # Exercise 1 — first single VM (10.9.8.7)
-│   └── Vagrantfile
-├── multitest/                    # Exercise 1 — two-VM project (test1, test2)
-│   └── Vagrantfile
-├── localusers/                   # Projects 1–5 — single VM "localusers"
+.
+├── documents/        # Course handouts for Exercises 1–7 (PDF)
+├── testbox01/        # Exercise 1: first test VM
+├── multitest/        # Exercise 1: two-VM test
+├── localusers/       # Projects 1–5
 │   ├── Vagrantfile
-│   ├── demos/                    # Course demo scripts, written along with the videos
-│   ├── exercises/                # My solutions to Exercises 2–6
-│   └── lessons/                  # My numbered study notes (01–10)
-└── multinet/                     # Project 6 — admin01 + server01 + server02
-    ├── Vagrantfile
-    ├── demos/                    # Ping demo + server list
-    ├── exercises/                # My solution to Exercise 7
-    └── lessons/                  # Study notes (11)
+│   ├── demos/        # luser-demo01–14.sh: scripts from the course videos + access_log sample
+│   ├── exercises/    # Exercise 2–6 solutions + syslog-sample
+│   └── lessons/      # 01–10: my study notes written as scripts
+├── multinet/         # Project 6
+│   ├── Vagrantfile   # admin01, server01, server02
+│   ├── demos/        # multinet-demo01.sh (ping check) + servers list
+│   ├── exercises/    # run-everywhere.sh
+│   └── lessons/      # 11: SSH and remote-command notes
+└── .claude/skills/study-log/   # Claude Code skill: one issue + one commit per lesson
 ```
 
-Each Vagrant project has the same three script folders:
+- **demos/**: scripts from the course videos, with my notes added
+- **exercises/**: my solutions to the PDF exercises
+- **lessons/**: reference notes. Copy commands one by one instead of running the file; some lines delete users or files
 
-| Folder | Contents | How to use it |
-|---|---|---|
-| `demos/` | Scripts the instructor builds in the videos (`luser-demoNN.sh`), retyped by me with extra `# Bonus:` notes on every command used | Run them; they're safe to run in the VM |
-| `exercises/` | My solutions to the exercise PDFs in `documents/` | Run them with the arguments shown in [Running the scripts](#running-the-scripts) |
-| `lessons/` | My own notes, written as shell scripts with commands, explanations and real output in comments | **Read them; don't run them whole.** Copy commands one at a time (see the warning below) |
+## Usage
 
----
-
-## File reference
-
-### Root
-
-| File | Purpose |
-|---|---|
-| [`.gitignore`](.gitignore) | Ignores every `.vagrant/` folder. Those hold per-VM state, including private SSH keys, so they must never be committed |
-| [`.claude/skills/study-log/SKILL.md`](.claude/skills/study-log/SKILL.md) | Claude Code skill behind the learning-log workflow: drafts each lesson issue and commit message, and asks for confirmation before creating either |
-
-### `documents/` — course handouts
-
-| File | Exercise |
-|---|---|
-| `Exercise-01-CreatingaLocalLabEnvironment.pdf` | Install VirtualBox + Vagrant; build `testbox01` and `multitest` |
-| `Exercise-02-Creating-Local-Users-01.pdf` | `add-local-user.sh`: interactive account creation |
-| `Exercise-03-Creating-Local-Users-02.pdf` | `add-new-local-user.sh`: arguments + generated password |
-| `Exercise-04-Creating-Local-Users-03.pdf` | `add-newer-local-user.sh`: STDERR / `/dev/null` conventions |
-| `Exercise-05-Deleting-Local-Users-04.pdf` | `disable-local-user.sh`: disable / delete / archive |
-| `Exercise-06-Parsing-Log-Files-05.pdf` | `show-attackers.sh`: failed-login report |
-| `Exercise-07-Scripting-Remote-Commands-01.pdf` | `run-everywhere.sh`: run a command on many servers |
-
-### Vagrant projects
-
-| File | Machines | Network |
-|---|---|---|
-| [`testbox01/Vagrantfile`](testbox01/Vagrantfile) | `testbox01` | private 10.9.8.7 |
-| [`multitest/Vagrantfile`](multitest/Vagrantfile) | `test1`, `test2` | private 10.9.8.5 / .6 |
-| [`localusers/Vagrantfile`](localusers/Vagrantfile) | `localusers` (hostname is set so `$(hostname)` prints it) | NAT only |
-| [`multinet/Vagrantfile`](multinet/Vagrantfile) | `admin01`, `server01`, `server02` | private 192.168.56.10 / .11 / .12 |
-
-All of them use the `jasonc/centos7` box.
-
-### `localusers/demos/` — course demo scripts
-
-| File | Lesson | What it shows | Run with |
-|---|---|---|---|
-| [`luser-demo01.sh`](localusers/demos/luser-demo01.sh) | S3-L12 | Variables, valid names, `$VAR` vs `${VAR}`, single vs double quotes, reassignment | — |
-| [`luser-demo02.sh`](localusers/demos/luser-demo02.sh) | S3-L13 | `$UID` (read-only), UID vs EUID, `id -u/-n/-un`, `whoami`, `$( )` vs backticks, root check with `[[ ]]`, `[ ]`, `test` | — |
-| [`luser-demo03.sh`](localusers/demos/luser-demo03.sh) | S3-L14 | Exit statuses, `exit 0/1`, `$?`, numeric operators (`-eq -ne -lt …`), string tests `=` / `!=`, DRY | — |
-| [`luser-demo04.sh`](localusers/demos/luser-demo04.sh) | S3-L15 | `read -p`, username conventions, `useradd -c -m`, `passwd --stdin`, `passwd -e` | `sudo` |
-| [`luser-demo05.sh`](localusers/demos/luser-demo05.sh) | S4-L18 | Password generation: `$RANDOM`, `date +%s%N`, `sha256sum`, `head -c`, special character via `fold \| shuf \| head` | — |
-| [`luser-demo06.sh`](localusers/demos/luser-demo06.sh) | S4-L19 | `$0`, `$#`, `"$@"`, `dirname`/`basename`, `$PATH` lookup order, `for` loop; one password per username | `USER [USER]...` |
-| [`luser-demo07.sh`](localusers/demos/luser-demo07.sh) | S4-L20 | `while [[ $# -gt 0 ]]` + `shift`, `true`, `sleep` | any args |
-| [`luser-demo08.sh`](localusers/demos/luser-demo08.sh) | S5-L23/24 | `>`, `>>`, `<`, explicit FDs `0<` `1>` `2>`, `&>`, `\|&`, `>&2`, `/dev/null` (uses `/tmp/data`) | — |
-| [`luser-demo09.sh`](localusers/demos/luser-demo09.sh) | S6-L27 | `case` replacing an `if/elif` chain, patterns with `\|`, `*` catch-all | `start\|stop\|status` |
-| [`luser-demo10.sh`](localusers/demos/luser-demo10.sh) | S6-L28 | Functions (both syntaxes), `local`, `readonly`, `logger -t` to syslog, `backup_file` to `/var/tmp`, `return` vs `exit` | — |
-| [`luser-demo11.sh`](localusers/demos/luser-demo11.sh) | S6-L29/30 | `getopts vl:s`, `OPTARG`, `usage()`, `shift $(( OPTIND - 1 ))`; arithmetic notes (`$(( ))`, `bc`, `let`, `expr`) | `[-vs] [-l LENGTH]` |
-| [`luser-demo12.sh`](localusers/demos/luser-demo12.sh) | S6-L34 | Delete a user: root check, `userdel`, `$?`, errors to STDERR | `sudo … USER` |
-| [`luser-demo13.sh`](localusers/demos/luser-demo13.sh) | S7-L38 | Open listening ports: `netstat -nutl \| grep \| awk \| awk -F:` | `[-4]` |
-| [`luser-demo14.sh`](localusers/demos/luser-demo14.sh) | S7-L39 | Top 3 most-visited URLs: `cut \| awk \| sort \| uniq -c \| sort -n \| tail -3` | `access_log` |
-| [`access_log`](localusers/demos/access_log) | S7-L39 | Sample Apache access log (10,000 lines) for `luser-demo14.sh` | — |
-
-### `localusers/exercises/` — exercise solutions
-
-| File | Exercise | Key techniques |
-|---|---|---|
-| [`add-local-user.sh`](localusers/exercises/add-local-user.sh) | 2 | Root check, `read -p` ×3, `useradd`, `passwd --stdin`, `passwd -e`, `$?` after each step, print user/password/host |
-| [`add-new-local-user.sh`](localusers/exercises/add-new-local-user.sh) | 3 | Usage message when no args, `USER_NAME=$1; shift; COMMENT="$@"`, password from `date +%s%N \| sha256sum \| head -c48` |
-| [`add-newer-local-user.sh`](localusers/exercises/add-newer-local-user.sh) | 4 | Same as above, plus `>&2` for every error and `&> /dev/null` on `useradd`/`passwd` so STDOUT holds only the result |
-| [`disable-local-user.sh`](localusers/exercises/disable-local-user.sh) | 5 | `getopts dra`, loop over many users, UID ≥ 1000 guard, `tar -zcf` to `/archives/<user>.tgz`, `userdel [-r]` or `chage -E 0`, overall `EXIT_STATUS` |
-| [`show-attackers.sh`](localusers/exercises/show-attackers.sh) | 6 | `grep 'Failed password for'`, `awk '{print $(NF - 3)}'`, `sort \| uniq -c \| sort -nr`, `while read COUNT IP`, `LIMIT=10`, `geoiplookup`, CSV output |
-| [`syslog-sample`](localusers/exercises/syslog-sample) | 6 | Sample sshd log (39,320 lines, 13,552 failed logins) for `show-attackers.sh` |
-
-### `localusers/lessons/` — personal study notes
-
-| File | Issue | Topic |
-|---|---|---|
-| [`01-parameter-expansion.sh`](localusers/lessons/01-parameter-expansion.sh) | #1 | `$var` vs `${var}`, default `${v:-x}`, length `${#v}`, substring `${v:0:5}`, replace `${v/a/b}` |
-| [`02-command-substitution.sh`](localusers/lessons/02-command-substitution.sh) | #1 | Backticks vs `$( )`, nesting |
-| [`03-quote-comparison.sh`](localusers/lessons/03-quote-comparison.sh) | #1 | Single vs double vs no quotes, word splitting, globbing |
-| [`04-finding-file.sh`](localusers/lessons/04-finding-file.sh) | #15 | `type -a`, `which`, `locate` + `updatedb`, FHS, `find`, `2>/dev/null` |
-| [`05-userdel-command.sh`](localusers/lessons/05-userdel-command.sh) | #15 | `userdel`, `-r`, `-f`, orphaned UIDs in `ls -l`, UID ranges in `/etc/login.defs` |
-| [`06-archive-with-tar.sh`](localusers/lessons/06-archive-with-tar.sh) | #15 | `tar -c/-t/-x/-v/-f`, `gzip`/`gunzip`, `-z`, `.tgz`, old-style options |
-| [`07-disabling-accounts.sh`](localusers/lessons/07-disabling-accounts.sh) | #15 | `chage -E 0 / -1` (recommended), `passwd -l/-u`, `usermod -s /sbin/nologin` and why they're weaker |
-| [`08-cut-and-awk-command.sh`](localusers/lessons/08-cut-and-awk-command.sh) | #17 | `cut -b/-c/-f/-d`, `--output-delimiter`, `grep ^ $ -v -E`, `awk -F`, `$NF`, `OFS`; open-ports pipeline |
-| [`09-sort-and-uniq.sh`](localusers/lessons/09-sort-and-uniq.sh) | #18 | `sort -r/-n/-h/-u/-t/-k`, `du -h`, `uniq -c`, `wc`, counting syslog programs |
-| [`10-sed-command.sh`](localusers/lessons/10-sed-command.sh) | #20 | `s///` flags `i g N w`, `-i.bak`, alternate delimiters, `d`, `-e`/`-f`, addresses and ranges |
-
-> ⚠️ **Lesson files are notes, not tools.** Running them whole has side effects:
-> `03` runs `rm $pattern` (deletes `*.txt` in the current folder),
-> `05` deletes users `test1`/`test2` and opens `vi`,
-> `07` creates users `alex`/`john` and runs `su -`,
-> `04`/`09` scan the whole filesystem with `sudo`.
-> Copy the commands one at a time, and only inside a VM.
-
-### `multinet/`
-
-| File | Issue | Purpose |
-|---|---|---|
-| [`demos/multinet-demo01.sh`](multinet/demos/multinet-demo01.sh) | #21 | Pings every host in the server list and reports up/down |
-| [`demos/servers`](multinet/demos/servers) | #21 #22 | Default server list (`server01`, `server02`), read from `/vagrant/demos/servers` |
-| [`exercises/run-everywhere.sh`](multinet/exercises/run-everywhere.sh) | #22 | Exercise 7: runs a command on every listed server over SSH |
-| [`lessons/11-mini-network-and-scripting-for-remote-systems.sh`](multinet/lessons/11-mini-network-and-scripting-for-remote-systems.sh) | #21 | Notes only: multi-VM Vagrantfile, `/etc/hosts` + `sudo tee -a`, SSH host keys vs user keys, `ssh host cmd`, quoting remote commands, exit code 255, `set -o pipefail`, `ssh host sudo cmd` vs `sudo ssh host` |
-
----
-
-## Course map: lesson → issue → files
-
-Lesson tags use the course numbering `S<section>-L<lecture>`. Sections 1–2 (introduction and lab setup) map to Exercise 1 (`testbox01/`, `multitest/`). Sections 9–11 (summary, extras) have no code.
-
-| Issue | Lesson (verbatim course title) | Tag | Files |
-|---|---|---|---|
-| [#1](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/1) | Getting Started with Shell Scripting: Naming, Permissions, Variables, Builtins. | S3-L12 | `demos/luser-demo01.sh`, `lessons/01–03` |
-| [#2](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/2) | Special Variables, Pseudocode, Command Substitution, if Statement, Conditionals. | S3-L13 | `demos/luser-demo02.sh` |
-| [#3](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/3) | Exit Statuses, Return Codes, String Test Conditionals, More Special Variables. | S3-L14 | `demos/luser-demo03.sh` |
-| [#4](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/4) | Reading Standard Input, Creating Accounts, Username Conventions, More Quoting. | S3-L15 | `demos/luser-demo04.sh` |
-| [#5](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/5) | Exercise 2 - Instructions & Walkthrough. | S3-L16/17 | `exercises/add-local-user.sh` |
-| [#6](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/6) | Random Data, Cryptographic Hash Functions, Text and String Manipulation. | S4-L18 | `demos/luser-demo05.sh` |
-| [#7](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/7) | Positional Parameters, Arguments, for Loops, Special Parameters. | S4-L19 | `demos/luser-demo06.sh` |
-| [#8](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/8) | The while Loop, Infinite Loops, Shifting, Sleeping. | S4-L20 | `demos/luser-demo07.sh` |
-| [#9](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/9) | Exercise 3 - Instructions & Walkthrough. | S4-L21/22 | `exercises/add-new-local-user.sh` |
-| [#10](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/10) | Advanced Standard Input, Standard Output, and Standard Error - Part I & Part II. | S5-L23/24 | `demos/luser-demo08.sh` |
-| [#11](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/11) | Exercise 4 - Instructions & Walkthrough. | S5-L25/26 | `exercises/add-newer-local-user.sh` |
-| [#12](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/12) | Case Statements. | S6-L27 | `demos/luser-demo09.sh` |
-| [#13](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/13) | Functions. | S6-L28 | `demos/luser-demo10.sh` |
-| [#14](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/14) | Parsing Command Line Options with getopts, Part 1 & Part 2. | S6-L29/30 | `demos/luser-demo11.sh` |
-| [#15](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/15) | Deleting and Disabling Linux Accounts, Part 1-4. | S6-L31–34 | `lessons/04–07`, `demos/luser-demo12.sh` |
-| [#16](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/16) | Exercise 5 - Instructions & Walkthrough. | S6-L35/36 | `exercises/disable-local-user.sh` |
-| [#17](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/17) | Cut and Awk. / Cut and Awk Demonstration Script: Open Network Ports. | S7-L37/38 | `lessons/08`, `demos/luser-demo13.sh` |
-| [#18](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/18) | Sort and Uniq. | S7-L39 | `lessons/09`, `demos/luser-demo14.sh`, `demos/access_log` |
-| [#19](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/19) | Parsing Log Files - Exercise 6 - Instructions & Walkthrough. | S7-L40/41 | `exercises/show-attackers.sh`, `exercises/syslog-sample` |
-| [#20](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/20) | Sed. | S7-L42 | `lessons/10` |
-| [#21](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/21) | Configuring a Mini Network and Scripting for Remote Systems. | S8-L43 | `multinet/Vagrantfile`, `multinet/lessons/11`, `multinet/demos/*` |
-| [#22](https://github.com/dev000000/Linux-Shell-Scripting-Jason_Cannon/issues/22) | Scripting Remote Commands - Exercise 7 - Instructions & Walkthrough. | S8-L44–46 | `multinet/exercises/run-everywhere.sh` |
-
-Paths in the first 20 rows are relative to `localusers/`.
-
----
-
-## Running the scripts
-
-Scripts are committed **without the executable bit** (mode `100644`). Inside the VM, either:
+Scripts are not executable in git. Inside the VM, run them with `bash` (add `sudo` when needed):
 
 ```bash
-bash ./script.sh            # or: sudo bash ./script.sh
-```
-
-or make them executable, as the course does:
-
-```bash
-chmod 755 script.sh && ./script.sh
-```
-
-`chmod` inside `/vagrant` changes the file on the host too, so `git status` will list it as a mode change.
-
-### Projects 1–5 (in `localusers`, `cd /vagrant`)
-
-```bash
-# Exercise 2 — interactive
-sudo bash exercises/add-local-user.sh
-
-# Exercise 3 — username + optional comment, password generated
 sudo bash exercises/add-new-local-user.sh dstamper Doug Stamper
-
-# Exercise 4 — check that STDOUT and STDERR are separated
-sudo bash exercises/add-newer-local-user.sh einstein Albert Einstein > out.txt 2> err.txt
-bash exercises/add-newer-local-user.sh test        # not root → error on STDERR, exit 1
-
-# Exercise 5 — disable (default), delete, remove home dir, archive
-sudo bash exercises/disable-local-user.sh dstamper                # chage -E 0
-sudo bash exercises/disable-local-user.sh -dra einstein dstamper  # archive to /archives, then userdel -r
-sudo bash exercises/disable-local-user.sh root                    # refused: UID < 1000
-
-# Exercise 6 — failed-login report as CSV
+sudo bash exercises/disable-local-user.sh -dra dstamper
 bash exercises/show-attackers.sh exercises/syslog-sample
-bash exercises/show-attackers.sh /no/such/file; echo $?           # → 1
+bash exercises/run-everywhere.sh -v -s id        # on admin01, as vagrant (not root)
 ```
 
-Sample output of `show-attackers.sh` on `syslog-sample`, from the course handout:
+## Learning log
 
-```
-Count,IP,Location
-6749,182.100.67.59,China
-3379,183.3.202.111,China
-3085,218.25.208.92,China
-142,41.223.57.47,Kenya
-87,195.154.49.74,France
-57,180.128.252.1,Thailand
-27,208.109.54.40,United States
-20,159.122.220.20,United States
-```
+- One issue per lesson. The title is `N.<topic>`; the body holds the course lesson title, an `(S<section>-L<lecture>)` tag and the key points.
+- Commits follow Conventional Commits (`lesson(scope): …`, `fix`, `refactor`, `chore`, `docs`) and end with `Refs: #N`.
 
-Demo scripts that take arguments:
+## Notes
 
-```bash
-bash demos/luser-demo06.sh alice bob          # one password per user
-bash demos/luser-demo07.sh a b c d            # while + shift
-bash demos/luser-demo09.sh status             # case statement
-bash demos/luser-demo11.sh -v -s -l 16        # getopts password generator
-bash demos/luser-demo13.sh -4                 # open IPv4 ports
-bash demos/luser-demo14.sh demos/access_log   # top 3 URLs
-```
-
-### Project 6 (on `admin01`, as user `vagrant`, `cd /vagrant`)
-
-```bash
-bash demos/multinet-demo01.sh                                  # ping each server
-
-bash exercises/run-everywhere.sh hostname                      # run on all servers
-bash exercises/run-everywhere.sh -v uptime                     # print server names
-bash exercises/run-everywhere.sh -n -s id                      # dry run: show the ssh commands only
-bash exercises/run-everywhere.sh -s 'useradd -c "Test Two" test2'   # as root on each server
-echo server01 > test && bash exercises/run-everywhere.sh -f /vagrant/test hostname
-sudo bash exercises/run-everywhere.sh hostname                 # refused: don't run as root, use -s
-```
-
-`run-everywhere.sh` exits with `0`, or with the most recent non-zero ssh status: `127` for an unknown remote command, `255` when a server can't be reached. Each ssh call times out after 2 seconds (`-o ConnectTimeout=2`).
+- Run scripts **only inside the VMs**: they create, lock and delete users.
+- If `vagrant up` rejects the `10.9.8.x` IPs in `testbox01/` or `multitest/`, add `* 10.0.0.0/8 192.168.0.0/16` to `/etc/vbox/networks.conf` on the host.
+- CentOS 7 is end-of-life, so `yum install` needs the repos switched to `vault.centos.org`.
 
 ---
 
-## Learning-log workflow
-
-The repo is also a record of how I studied. Each lesson produces:
-
-1. **One issue** (label `learning`), titled `N.<topic>`. The body contains:
-   - `## Lesson`: the course lecture title, copied verbatim, plus its `(S<section>-L<lecture>)` tag;
-   - `## Key points`: one bullet per subtopic covered.
-2. **One or more commits** in [Conventional Commits](https://www.conventionalcommits.org/) style, ending with `Refs: #N`, so the issue lists every commit for that lesson.
-
-| Type | Used for | Example from history |
-|---|---|---|
-| `lesson(<topic>)` | New practice script or exercise for a lesson | `lesson(getopts): add password generator with getopts option parsing` |
-| `fix(<scope>)` | Fixing a script that behaved wrongly | `fix(localusers): return accurate exit status and document each step` |
-| `refactor(<scope>)` | Same behaviour, cleaner code or layout | `refactor(localusers): reorganize scripts into demos, exercises and lessons` |
-| `chore` | Tooling, `.gitignore`, renames | `chore: ignore Vagrant machine state and stop tracking .vagrant/` |
-| `docs` | Handouts, README | `docs(documents): add course exercise handouts` |
-
-Commit bodies record what each file shows and the main takeaway:
-
-```
-lesson(sed): add sed stream editor practice script
-
-- 10-sed-command.sh: substitute with s/search/replace/flags using i, g,
-  Nth-occurrence and w flags; save output via redirect or in-place -i.bak
-- Delete lines with d: strip comments (/^#/d) and blank lines (/^$/d)
-- Takeaway: sed is non-interactive find/replace, ideal for config templating
-
-Refs: #20
-```
-
-Browse the history per lesson with `git log --oneline --grep "Refs: #16"`, or open an issue to see its linked commits.
-
-The [`study-log`](.claude/skills/study-log/SKILL.md) skill automates this with [Claude Code](https://claude.com/claude-code). After a lesson, ask it to *"tạo issue cho bài …"* or *"viết commit cho bài học"*. It reads the staged diff, drafts the issue or commit, and creates nothing until you confirm.
-
----
-
-## Troubleshooting
-
-### Host-only IP range (`10.9.8.x` rejected)
-
-VirtualBox 6.1.28+ on Linux and macOS only allows host-only networks in `192.168.56.0/21` by default. In that case `vagrant up` in `testbox01/` or `multitest/` fails with *"The IP address configured for the host-only network is not within the allowed ranges"*. Fix it with either:
-
-- allow the course range on the host:
-  ```bash
-  sudo mkdir -p /etc/vbox
-  echo "* 10.0.0.0/8 192.168.0.0/16" | sudo tee -a /etc/vbox/networks.conf
-  ```
-- or change the IPs in the `Vagrantfile` to `192.168.56.x`, as `multinet/` already does.
-
-### `Timed out while waiting for the machine to boot`
-
-The VM booted with its network cable disconnected. Add this inside `Vagrant.configure` and run `vagrant reload`:
-
-```ruby
-config.vm.provider "virtualbox" do |vb|
-  vb.customize ['modifyvm', :id, '--cableconnected1', 'on']
-end
-```
-
-### `This kernel requires an x86-64 CPU, but only detected an i686 CPU`
-
-VT-x/AMD-V is disabled. Enable it in the BIOS/UEFI. On Windows, also disable Hyper-V and Virtual Machine Platform.
-
-### `$'\r': command not found` / `bad interpreter: /bin/bash^M`
-
-The scripts were checked out with Windows (CRLF) line endings. Fix them with:
-
-```bash
-git config --global core.autocrlf input
-git rm --cached -r . && git reset --hard      # re-checkout with LF (discards uncommitted changes)
-```
-
-You can also run `sed -i 's/\r$//' script.sh` inside the VM.
-
-### `yum install` fails inside the VM
-
-CentOS 7 reached end of life in June 2024 and its mirrors are offline. The course scripts only need tools already in the `jasonc/centos7` box (`netstat`, `locate`, `geoiplookup`, …). If you do need a package, point yum at the vault first:
-
-```bash
-sudo sed -i -e 's/^mirrorlist/#mirrorlist/' \
-            -e 's|^#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|' \
-            /etc/yum.repos.d/CentOS-*.repo
-sudo yum install -y GeoIP      # e.g. if geoiplookup is missing
-```
-
-### `ssh server01` asks for a password / `Could not resolve hostname`
-
-Repeat the admin01 setup in [step 5](#5-project-6-the-multinet-3-vm-network): add the `/etc/hosts` entries and run `ssh-copy-id` for each server. Key auth is one-way, admin01 → servers.
-
-### Starting fresh
-
-```bash
-vagrant destroy -f && vagrant up
-```
-
-Run this in the project folder. The `.vagrant/` folders are git-ignored, so a fresh clone always builds new VMs.
-
----
-
-## Credits
-
-- Course, exercise handouts (`documents/`), demo script outlines and the `jasonc/centos7` box: **Jason Cannon**, [Linux Training Academy](https://www.linuxtrainingacademy.com/), via [Udemy](https://www.udemy.com/course/linux-shell-scripting-projects/).
-- Exercise solutions, annotations, study notes and repo organization: [@dev000000](https://github.com/dev000000).
-
-This is a personal study repository. Run every script **only inside the lab VMs**: they create, lock and delete user accounts.
+Course and exercise handouts © Jason Cannon / [Linux Training Academy](https://www.linuxtrainingacademy.com/). Solutions and notes by [@dev000000](https://github.com/dev000000).
